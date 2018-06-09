@@ -14,8 +14,8 @@ import java.util.TreeMap;
 
 class UriBuilder {
 
-    public static UriBuilder newBuilder() {
-        return new UriBuilder(Intercom.getApiBaseURI());
+    public static UriBuilder newBuilder(Intercom intercom) {
+        return new UriBuilder(intercom.getApiBaseURI());
     }
 
     public static UriBuilder newBuilder(String uri) {

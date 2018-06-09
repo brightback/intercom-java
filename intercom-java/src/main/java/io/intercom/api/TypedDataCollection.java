@@ -19,6 +19,16 @@ public abstract class TypedDataCollection<T extends TypedData> extends TypedData
 
     public static final String NEXT_PAGE_REL = "next";
 
+    protected Intercom intercom;
+    
+    public void setIntercom(Intercom intercom) {
+	this.intercom = intercom;
+    }
+    
+    public void getIntercom(Intercom intercom) {
+	this.intercom = intercom;
+    }
+
     protected List<T> page = Lists.newArrayList();
 
     @JsonProperty("pages")
@@ -40,7 +50,7 @@ public abstract class TypedDataCollection<T extends TypedData> extends TypedData
     protected <C extends TypedDataCollection<T>> C fetchNextPage(Class<C> typeReference) {
         if (hasNextPage()) {
             final URI next = UriBuilder.newBuilder(pages.get(TypedDataCollection.NEXT_PAGE_REL)).build();
-            final HttpClient resource = new HttpClient(next);
+            final HttpClient resource = new HttpClient(intercom, next);
             return resource.get(typeReference);
         } else {
             return null;

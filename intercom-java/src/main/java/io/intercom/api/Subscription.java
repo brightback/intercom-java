@@ -21,44 +21,44 @@ public class Subscription extends TypedData {
 
     private static final HashMap<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Subscription create(Subscription subscription) throws InvalidException, AuthorizationException {
-        return DataResource.create(subscription, "subscriptions", Subscription.class);
+    public static Subscription create(Intercom intercom, Subscription subscription) throws InvalidException, AuthorizationException {
+        return DataResource.create(intercom, subscription, "subscriptions", Subscription.class);
     }
 
-    public static Subscription update(Subscription subscription) throws InvalidException, AuthorizationException {
-        return DataResource.update(subscription, "subscriptions", subscription.getId(), Subscription.class);
+    public static Subscription update(Intercom intercom, Subscription subscription) throws InvalidException, AuthorizationException {
+        return DataResource.update(intercom, subscription, "subscriptions", subscription.getId(), Subscription.class);
     }
 
-    public static Subscription delete(Subscription subscription) throws InvalidException, AuthorizationException {
-        return DataResource.delete(subscription.getId(), "subscriptions", Subscription.class);
+    public static Subscription delete(Intercom intercom, Subscription subscription) throws InvalidException, AuthorizationException {
+        return DataResource.delete(intercom, subscription.getId(), "subscriptions", Subscription.class);
     }
 
-    public static Subscription find(String id) throws InvalidException, AuthorizationException {
-        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path("subscriptions").path(id).build());
+    public static Subscription find(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final HttpClient resource = new HttpClient(intercom, UriBuilder.newBuilder(intercom).path("subscriptions").path(id).build());
         return resource.get(Subscription.class);
     }
 
-    public static SubscriptionCollection list() throws InvalidException, AuthorizationException {
-        return DataResource.list(SENTINEL, "subscriptions", SubscriptionCollection.class);
+    public static SubscriptionCollection list(Intercom intercom) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, SENTINEL, "subscriptions", SubscriptionCollection.class);
     }
 
-    public static NotificationCollection sentFeed(String id) throws InvalidException, AuthorizationException {
-        final URI feedURI = UriBuilder.newBuilder()
+    public static NotificationCollection sentFeed(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final URI feedURI = UriBuilder.newBuilder(intercom)
             .path("subscriptions")
             .path(id)
             .path("sent")
             .build();
-        final HttpClient resource = new HttpClient(feedURI);
+        final HttpClient resource = new HttpClient(intercom, feedURI);
         return resource.get(NotificationCollection.class);
     }
 
-    public static NotificationErrorCollection errorFeed(String id) throws InvalidException, AuthorizationException {
-        final URI feedURI = UriBuilder.newBuilder()
+    public static NotificationErrorCollection errorFeed(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final URI feedURI = UriBuilder.newBuilder(intercom)
             .path("subscriptions")
             .path(id)
             .path("error")
             .build();
-        final HttpClient resource = new HttpClient(feedURI);
+        final HttpClient resource = new HttpClient(intercom, feedURI);
         return resource.get(NotificationErrorCollection.class);
     }
 

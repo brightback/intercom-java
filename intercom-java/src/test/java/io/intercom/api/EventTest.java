@@ -11,6 +11,8 @@ import static org.junit.Assert.*;
 public class EventTest {
     private static ObjectMapper mapper;
 
+    Intercom intercom = null;
+    
     @BeforeClass
     public static void beforeClass() {
         mapper = MapperSupport.objectMapper();
@@ -55,7 +57,7 @@ public class EventTest {
     public void testMissingUser() {
         final Event event1 = new Event().setEventName("bought-hat");
         try {
-            Event.create(event1);
+            Event.create(intercom, event1);
             fail("an event with no user id or email should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -66,7 +68,7 @@ public class EventTest {
             .setUserID("")
             .putMetadata("invitee_email", "jayne@serenity.io");
         try {
-            Event.create(event2);
+            Event.create(intercom, event2);
             fail("an event with a blank  user id should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -74,7 +76,7 @@ public class EventTest {
 
         final Event event3 = new Event().setEmail("");
         try {
-            Event.create(event3);
+            Event.create(intercom, event3);
             fail("an event with a blank  email should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -87,7 +89,7 @@ public class EventTest {
         Event event1 = new Event()
             .setEmail("jayne@serenity.io");
         try {
-            Event.create(event1);
+            Event.create(intercom, event1);
             fail("an event with a blank  name should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -98,7 +100,7 @@ public class EventTest {
             .setEmail("jayne@serenity.io")
             .setEventName("");
         try {
-            Event.create(event2);
+            Event.create(intercom, event2);
             fail("an event with a blank  name should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -109,7 +111,7 @@ public class EventTest {
     public void testMissingId() {
         final Event event1 = new Event().setEventName("test-id");
         try {
-            Event.create(event1);
+            Event.create(intercom, event1);
             fail("an event with no id or email should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -120,7 +122,7 @@ public class EventTest {
                 .setId("")
                 .putMetadata("invitee_email", "jayne@serenity.io");
         try {
-            Event.create(event2);
+            Event.create(intercom, event2);
             fail("an event with an empty id should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);
@@ -130,7 +132,7 @@ public class EventTest {
                 .setId("49bf6b081d661db4408a51e1")
                 .setEmail("");
         try {
-            Event.create(event3);
+            Event.create(intercom, event3);
             fail("an event with an empty email should be invalid");
         } catch (InvalidException e) {
             assertTrue(e.getFirstError() != null);

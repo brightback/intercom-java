@@ -16,23 +16,23 @@ public class Company extends TypedData {
 
     private static final Map<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Company find(String id) throws InvalidException, AuthorizationException {
-        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path("companies").path(id).build());
+    public static Company find(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final HttpClient resource = new HttpClient(intercom, UriBuilder.newBuilder(intercom).path("companies").path(id).build());
         return resource.get(Company.class);
     }
 
-    public static Company find(Map<String, String> params) throws InvalidException, AuthorizationException {
+    public static Company find(Intercom intercom, Map<String, String> params) throws InvalidException, AuthorizationException {
         if (!params.containsKey("company_id") && !params.containsKey("name")) {
             throw new InvalidException("a company find must include a company_id or name parameter");
         }
-        return DataResource.find(params, "companies", Company.class);
+        return DataResource.find(intercom, params, "companies", Company.class);
     }
 
-    public static Company create(Company company) throws InvalidException, AuthorizationException {
-        return update(company);
+    public static Company create(Intercom intercom, Company company) throws InvalidException, AuthorizationException {
+        return update(intercom, company);
     }
 
-    public static Company update(Company company) throws InvalidException, AuthorizationException {
+    public static Company update(Intercom intercom, Company company) throws InvalidException, AuthorizationException {
         // because the data is asymmetric on the plan field
         final CompanyWithStringPlan entity = new CompanyWithStringPlan();
         entity.setCompanyID(company.getCompanyID());
@@ -46,36 +46,36 @@ public class Company extends TypedData {
         if(company.getPlan() !=null )  {
             entity.setPlan(company.getPlan().getName());
         }
-        return DataResource.update(entity, "companies", Company.class);
+        return DataResource.update(intercom, entity, "companies", Company.class);
     }
 
-    public static Company delete(String id) throws InvalidException, AuthorizationException {
-        return DataResource.delete(id, "companies", Company.class);
+    public static Company delete(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        return DataResource.delete(intercom, id, "companies", Company.class);
     }
 
-    public static CompanyCollection list(Map<String, String> params) throws InvalidException, AuthorizationException {
-        return DataResource.list(params, "companies", CompanyCollection.class);
+    public static CompanyCollection list(Intercom intercom, Map<String, String> params) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, params, "companies", CompanyCollection.class);
     }
 
-    public static CompanyCollection list() throws InvalidException, AuthorizationException {
-        return DataResource.list(SENTINEL, "companies", CompanyCollection.class);
+    public static CompanyCollection list(Intercom intercom) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, SENTINEL, "companies", CompanyCollection.class);
     }
 
-    public static ScrollableCompanyCollection scroll()
+    public static ScrollableCompanyCollection scroll(Intercom intercom)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.scroll(null, "companies", ScrollableCompanyCollection.class);
+        return DataResource.scroll(intercom, null, "companies", ScrollableCompanyCollection.class);
     }
 
-    public static UserCollection listUsers(Map<String, String> params) throws InvalidException, AuthorizationException {
+    public static UserCollection listUsers(Intercom intercom, Map<String, String> params) throws InvalidException, AuthorizationException {
         URI usersURI;
         if (params.containsKey("company_id")) {
-            usersURI = UriBuilder.newBuilder()
+            usersURI = UriBuilder.newBuilder(intercom)
                 .path("companies")
                 .query("company_id", params.get("company_id"))
                 .query("type", "users")
                 .build();
         } else if (params.containsKey("id")) {
-            usersURI = UriBuilder.newBuilder()
+            usersURI = UriBuilder.newBuilder(intercom)
                 .path("companies")
                 .path(params.get("id"))
                 .path("users")
@@ -83,7 +83,7 @@ public class Company extends TypedData {
         } else {
             throw new InvalidException("a company user list query must supply a company_id or id parameter");
         }
-        final HttpClient resource = new HttpClient(usersURI);
+        final HttpClient resource = new HttpClient(intercom, usersURI);
         return resource.get(UserCollection.class);
     }
 

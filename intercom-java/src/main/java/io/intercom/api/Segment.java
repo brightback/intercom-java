@@ -13,20 +13,20 @@ public class Segment extends TypedData {
 
     private static final HashMap<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Segment find(String id) throws InvalidException, AuthorizationException {
-        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path("segments").path(id).build());
+    public static Segment find(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final HttpClient resource = new HttpClient(intercom, UriBuilder.newBuilder(intercom).path("segments").path(id).build());
         return resource.get(Segment.class);
     }
 
-    public static SegmentCollection list() throws InvalidException, AuthorizationException {
-        return DataResource.list(SENTINEL, "segments", SegmentCollection.class);
+    public static SegmentCollection list(Intercom intercom) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, SENTINEL, "segments", SegmentCollection.class);
     }
 
-    public static Segment update(Segment segment) throws InvalidException, AuthorizationException {
+    public static Segment update(Intercom intercom, Segment segment) throws InvalidException, AuthorizationException {
         if (segment.getId() == null) {
             throw new InvalidException("segment updates must supply an id");
         }
-        return DataResource.update(segment, "segments", Segment.class);
+        return DataResource.update(intercom, segment, "segments", Segment.class);
     }
 
     @JsonProperty("type")

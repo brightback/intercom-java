@@ -23,6 +23,8 @@ public class ConversationTest {
 
     private static ObjectMapper objectMapper;
 
+    Intercom intercom = null;
+
     @BeforeClass
     public static void beforeClass() {
         objectMapper = MapperSupport.objectMapper();
@@ -89,7 +91,7 @@ public class ConversationTest {
     public void testDisplayAs() {
 
         try {
-            Conversation.list(buildRequestParameters("pdf"));
+            Conversation.list(intercom, buildRequestParameters("pdf"));
             fail();
         } catch (InvalidException e) {
             assertTrue(e.getMessage()
@@ -146,7 +148,7 @@ public class ConversationTest {
         assertEquals(2, lastAttachment.getHeight());
 
         PowerMockito.verifyStatic(Mockito.never());
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -168,7 +170,7 @@ public class ConversationTest {
         assertEquals(0, conversationMessage.getAttachments().size());
 
         PowerMockito.verifyStatic(Mockito.never());
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -177,10 +179,10 @@ public class ConversationTest {
 
         String json = load("conversation.json");
         final Conversation conversation = objectMapper.readValue(json, Conversation.class);
-        assertEquals(2, conversation.getConversationPartCollection().getPage().size());
+        assertEquals(2, conversation.getConversationPartCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.never());
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -193,11 +195,11 @@ public class ConversationTest {
 
         String conversationJson = load("conversation.json");
         final Conversation conversationWithParts = objectMapper.readValue(conversationJson, Conversation.class);
-        Mockito.when(Conversation.find(conversation.getId())).thenReturn(conversationWithParts);
-        assertEquals(2, conversation.getConversationPartCollection().getPage().size());
+        Mockito.when(Conversation.find(intercom, conversation.getId())).thenReturn(conversationWithParts);
+        assertEquals(2, conversation.getConversationPartCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.times(1));
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -210,11 +212,11 @@ public class ConversationTest {
 
         String conversationJson = load("conversation_no_parts.json");
         final Conversation conversationWithParts = objectMapper.readValue(conversationJson, Conversation.class);
-        Mockito.when(Conversation.find(conversation.getId())).thenReturn(conversationWithParts);
-        assertEquals(0, conversation.getConversationPartCollection().getPage().size());
+        Mockito.when(Conversation.find(intercom, conversation.getId())).thenReturn(conversationWithParts);
+        assertEquals(0, conversation.getConversationPartCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.times(1));
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -223,10 +225,10 @@ public class ConversationTest {
 
         String json = load("conversation.json");
         final Conversation conversation = objectMapper.readValue(json, Conversation.class);
-        assertEquals(2, conversation.getTagCollection().getPage().size());
+        assertEquals(2, conversation.getTagCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.never());
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -239,11 +241,11 @@ public class ConversationTest {
 
         String conversationJson = load("conversation.json");
         final Conversation conversationWithTags = objectMapper.readValue(conversationJson, Conversation.class);
-        Mockito.when(Conversation.find(conversation.getId())).thenReturn(conversationWithTags);
-        assertEquals(2, conversation.getTagCollection().getPage().size());
+        Mockito.when(Conversation.find(intercom, conversation.getId())).thenReturn(conversationWithTags);
+        assertEquals(2, conversation.getTagCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.times(1));
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
 
     @Test
@@ -256,11 +258,11 @@ public class ConversationTest {
 
         String conversationJson = load("conversation_no_tags.json");
         final Conversation conversationWithTags= objectMapper.readValue(conversationJson, Conversation.class);
-        Mockito.when(Conversation.find(conversation.getId())).thenReturn(conversationWithTags);
-        assertEquals(0, conversation.getConversationPartCollection().getPage().size());
+        Mockito.when(Conversation.find(intercom, conversation.getId())).thenReturn(conversationWithTags);
+        assertEquals(0, conversation.getConversationPartCollection(intercom).getPage().size());
 
         PowerMockito.verifyStatic(Mockito.times(1));
-        Conversation.find(conversation.getId());
+        Conversation.find(intercom, conversation.getId());
     }
     private Map<String, String> buildRequestParameters(String html) {
         Map<String, String> params2 = Maps.newHashMap();

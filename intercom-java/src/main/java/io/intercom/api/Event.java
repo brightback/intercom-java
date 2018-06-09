@@ -28,36 +28,36 @@ public class Event extends TypedData {
         BULK_PATHS.add("events");
     }
 
-    public static void create(Event event) throws InvalidException, AuthorizationException {
+    public static void create(Intercom intercom, Event event) throws InvalidException, AuthorizationException {
 
         validateCreateEvent(event);
 
         if (event.getCreatedAt() == 0L) {
             event.setCreatedAt(System.currentTimeMillis() / 1000);
         }
-        DataResource.create(event, "events", Void.class);
+        DataResource.create(intercom, event, "events", Void.class);
     }
 
-    public static Job submit(List<JobItem<Event>> items)
+    public static Job submit(Intercom intercom, List<JobItem<Event>> items)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return submit(items, null);
+        return submit(intercom, items, null);
     }
 
-    public static Job submit(List<JobItem<Event>> items, Job job)
+    public static Job submit(Intercom intercom, List<JobItem<Event>> items, Job job)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return Job.submit(validateJobItems(items), job, BULK_PATHS);
+        return Job.submit(intercom, validateJobItems(items), job, BULK_PATHS);
     }
 
-    public static JobItemCollection<Event> listJobErrorFeed(String jobID)
+    public static JobItemCollection<Event> listJobErrorFeed(Intercom intercom, String jobID)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return Job.listJobErrorFeed(jobID, Event.class);
+        return Job.listJobErrorFeed(intercom, jobID, Event.class);
     }
 
-    public static EventCollection list(Map<String, String> params) throws InvalidException, AuthorizationException {
+    public static EventCollection list(Intercom intercom, Map<String, String> params) throws InvalidException, AuthorizationException {
         if ((!params.containsKey("email")) && (!params.containsKey("user_id")) && (!params.containsKey("intercom_user_id"))) {
             throw new InvalidException("an event query must include an email, user_id or intercom_user_id parameter");
         }
-        return DataResource.list(params, "events", EventCollection.class);
+        return DataResource.list(intercom, params, "events", EventCollection.class);
     }
 
     @VisibleForTesting

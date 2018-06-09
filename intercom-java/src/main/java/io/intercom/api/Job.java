@@ -19,44 +19,44 @@ public class Job extends TypedData {
 
     private static final HashMap<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Job find(String id)
+    public static Job find(Intercom intercom, String id)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return find(id, SENTINEL);
+        return find(intercom, id, SENTINEL);
     }
 
-    public static Job find(String id, Map<String, String> params)
+    public static Job find(Intercom intercom, String id, Map<String, String> params)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return new HttpClient(
-            UriBuilder.newBuilder().path("jobs").path(id).query(params).build()
+        return new HttpClient(intercom,
+            UriBuilder.newBuilder(intercom).path("jobs").path(id).query(params).build()
         ).get(Job.class);
     }
 
-    public static Job update(Job job)
+    public static Job update(Intercom intercom, Job job)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.post(
+        return DataResource.post(intercom,
             job,
-            UriBuilder.newBuilder().path("jobs").path(job.getID()).build(),
+            UriBuilder.newBuilder(intercom).path("jobs").path(job.getID()).build(),
             Job.class);
     }
 
-    static <T extends TypedData> Job submit(List<JobItem<T>> items, List<String> bulkPaths)
+    static <T extends TypedData> Job submit(Intercom intercom, List<JobItem<T>> items, List<String> bulkPaths)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return submit(items, null, bulkPaths);
+        return submit(intercom, items, null, bulkPaths);
     }
 
-    static <T extends TypedData> Job submit(List<JobItem<T>> items, Job job, List<String> bulkPaths)
+    static <T extends TypedData> Job submit(Intercom intercom, List<JobItem<T>> items, Job job, List<String> bulkPaths)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.create(new JobItemRequest<T>(items, job), bulkPaths, Job.class);
+        return DataResource.create(intercom, new JobItemRequest<T>(items, job), bulkPaths, Job.class);
     }
 
-    static <T extends TypedData> JobItemCollection<T> listJobErrorFeed(String jobID, Class<T> c)
+    static <T extends TypedData> JobItemCollection<T> listJobErrorFeed(Intercom intercom, String jobID, Class<T> c)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        final URI feedURI = UriBuilder.newBuilder()
+        final URI feedURI = UriBuilder.newBuilder(intercom)
             .path("jobs")
             .path(jobID)
             .path("error")
             .build();
-        final HttpClient resource = new HttpClient(feedURI);
+        final HttpClient resource = new HttpClient(intercom, feedURI);
         final TypeReference<JobItemCollection<T>> typeReference =
             new TypeReference<JobItemCollection<T>>() {
             };

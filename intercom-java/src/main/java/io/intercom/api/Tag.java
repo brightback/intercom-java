@@ -22,45 +22,45 @@ public class Tag extends TypedData {
     private static final Logger logger = LoggerFactory.getLogger("intercom-java");
     private static final HashMap<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Tag tag(Tag tag, User... users) throws InvalidException, AuthorizationException {
-        return tag(tag, new UserCollection(Lists.newArrayList(users)));
+    public static Tag tag(Intercom intercom, Tag tag, User... users) throws InvalidException, AuthorizationException {
+        return tag(intercom, tag, new UserCollection(Lists.newArrayList(users)));
     }
 
-    public static Tag tag(Tag tag, Company... companies) throws InvalidException, AuthorizationException {
-        return tag(tag, new CompanyCollection(Lists.newArrayList(companies)));
+    public static Tag tag(Intercom intercom, Tag tag, Company... companies) throws InvalidException, AuthorizationException {
+        return tag(intercom, tag, new CompanyCollection(Lists.newArrayList(companies)));
     }
 
-    static Tag tag(Tag tag, UserCollection users) throws InvalidException, AuthorizationException {
+    static Tag tag(Intercom intercom, Tag tag, UserCollection users) throws InvalidException, AuthorizationException {
         TaggableCollection taggableCollection = createTagTypedCollection(tag, users);
-        return DataResource.create(taggableCollection, "tags", Tag.class);
+        return DataResource.create(intercom, taggableCollection, "tags", Tag.class);
     }
 
-    static Tag tag(Tag tag, CompanyCollection companies) throws InvalidException, AuthorizationException {
+    static Tag tag(Intercom intercom, Tag tag, CompanyCollection companies) throws InvalidException, AuthorizationException {
         TaggableCollection taggableCollection = createTagTypedCollection(tag, companies);
-        return DataResource.create(taggableCollection, "tags", Tag.class);
+        return DataResource.create(intercom, taggableCollection, "tags", Tag.class);
     }
 
-    public static Tag create(Tag tag) throws InvalidException, AuthorizationException {
-        return DataResource.create(tag, "tags", Tag.class);
+    public static Tag create(Intercom intercom, Tag tag) throws InvalidException, AuthorizationException {
+        return DataResource.create(intercom, tag, "tags", Tag.class);
     }
 
-    public static Tag update(Tag tag) throws InvalidException, AuthorizationException {
+    public static Tag update(Intercom intercom, Tag tag) throws InvalidException, AuthorizationException {
         if (tag.getId() == null) {
             throw new InvalidException("tag updates must supply an id");
         }
-        return DataResource.update(tag, "tags", Tag.class);
+        return DataResource.update(intercom, tag, "tags", Tag.class);
     }
 
-    public static Tag delete(String id) throws InvalidException, AuthorizationException {
-        return DataResource.delete(id, "tags", Tag.class);
+    public static Tag delete(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        return DataResource.delete(intercom, id, "tags", Tag.class);
     }
 
-    public static Tag delete(Tag tag) throws InvalidException, AuthorizationException {
-        return delete(tag.getId());
+    public static Tag delete(Intercom intercom, Tag tag) throws InvalidException, AuthorizationException {
+        return delete(intercom, tag.getId());
     }
 
-    public static TagCollection list() throws InvalidException, AuthorizationException {
-        return DataResource.list(SENTINEL, "tags", TagCollection.class);
+    public static TagCollection list(Intercom intercom) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, SENTINEL, "tags", TagCollection.class);
     }
 
     @VisibleForTesting

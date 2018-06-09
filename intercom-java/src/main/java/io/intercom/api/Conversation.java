@@ -32,54 +32,54 @@ public class Conversation extends TypedData {
         MESSAGE_TYPE_OPEN
         );
 
-    public static Conversation find(String id) throws InvalidException, AuthorizationException {
-        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path("conversations").path(id).build());
+    public static Conversation find(Intercom intercom, String id) throws InvalidException, AuthorizationException {
+        final HttpClient resource = new HttpClient(intercom, UriBuilder.newBuilder(intercom).path("conversations").path(id).build());
         return resource.get(Conversation.class);
     }
 
-    public static ConversationCollection list() throws InvalidException, AuthorizationException {
-        return DataResource.list(SENTINEL, "conversations", ConversationCollection.class);
+    public static ConversationCollection list(Intercom intercom) throws InvalidException, AuthorizationException {
+        return DataResource.list(intercom, SENTINEL, "conversations", ConversationCollection.class);
     }
 
-    public static ConversationCollection list(Map<String, String> params) throws InvalidException, AuthorizationException {
+    public static ConversationCollection list(Intercom intercom, Map<String, String> params) throws InvalidException, AuthorizationException {
         validateListRequest(params);
 
-        return DataResource.list(params, "conversations", ConversationCollection.class);
+        return DataResource.list(intercom, params, "conversations", ConversationCollection.class);
     }
 
-    public static Conversation reply(String id, UserReply reply) {
+    public static Conversation reply(Intercom intercom, String id, UserReply reply) {
         validateUserReplyRequest(reply);
 
-        final URI uri = UriBuilder.newBuilder()
+        final URI uri = UriBuilder.newBuilder(intercom)
             .path("conversations")
             .path(id)
             .path("reply")
             .build();
-        return new HttpClient(uri)
+        return new HttpClient(intercom, uri)
             .post(Conversation.class, new UserReply.UserStringReply(reply));
     }
 
-    public static Conversation reply(String id, AdminReply reply) {
+    public static Conversation reply(Intercom intercom ,String id, AdminReply reply) {
         validateAdminReplyRequest(reply);
 
-        final URI uri = UriBuilder.newBuilder()
+        final URI uri = UriBuilder.newBuilder(intercom)
             .path("conversations")
             .path(id)
             .path("reply")
             .build();
-        return new HttpClient(uri)
+        return new HttpClient(intercom, uri)
             .post(Conversation.class, new AdminReply.AdminStringReply(reply));
     }
 
-    public static UserMessage create(UserMessage message) {
-        return DataResource.create(message, "messages", UserMessage.class);
+    public static UserMessage create(Intercom intercom, UserMessage message) {
+        return DataResource.create(intercom, message, "messages", UserMessage.class);
     }
 
-    public static ContactMessage create(ContactMessage message) {
-        return DataResource.create(message, "messages", ContactMessage.class);
+    public static ContactMessage create(Intercom intercom, ContactMessage message) {
+        return DataResource.create(intercom, message, "messages", ContactMessage.class);
     }
 
-    public static AdminMessage create(AdminMessage message) throws InvalidException {
+    public static AdminMessage create(Intercom intercom, AdminMessage message) throws InvalidException {
         if ((!message.getTemplate().equals("plain")) && (!message.getTemplate().equals("personal"))) {
             throw new InvalidException("The template must be either personal or plain");
         }
@@ -91,7 +91,7 @@ public class Conversation extends TypedData {
         type so we only expose AdminMessage in the client surface
          */
         final AdminMessageResponse adminMessageResponse =
-            DataResource.create(message, "messages", AdminMessageResponse.class);
+            DataResource.create(intercom, message, "messages", AdminMessageResponse.class);
         AdminMessage response = new AdminMessage();
         response.setAdmin(adminMessageResponse.getAdmin());
         response.setBody(adminMessageResponse.getBody());
@@ -218,23 +218,23 @@ public class Conversation extends TypedData {
         return type;
     }
 
-    public Admin getCurrentAssignee() {
+    public Admin getCurrentAssignee(Intercom intercom) {
         Admin assignee = null;
         if (getAssignee() != null) {
             assignee = getAssignee();
-        } else if (getMostRecentConversationPart() != null && getMostRecentConversationPart().getAssignedTo() != null) {
-            assignee = getMostRecentConversationPart().getAssignedTo();
+        } else if (getMostRecentConversationPart(intercom) != null && getMostRecentConversationPart(intercom).getAssignedTo() != null) {
+            assignee = getMostRecentConversationPart(intercom).getAssignedTo();
         }
 
         return assignee;
     }
 
-    public Optional<ConversationPart> getFirstConversationPart() {
-        return Optional.fromNullable(getConversationPartCollection().getPage().get(0));
+    public Optional<ConversationPart> getFirstConversationPart(Intercom intercom) {
+        return Optional.fromNullable(getConversationPartCollection(intercom).getPage().get(0));
     }
 
-    public ConversationPart getMostRecentConversationPart() {
-        final ConversationPartCollection conversationParts = getConversationPartCollection();
+    public ConversationPart getMostRecentConversationPart(Intercom intercom) {
+        final ConversationPartCollection conversationParts = getConversationPartCollection(intercom);
         final List<ConversationPart> items = conversationParts.getPage();
         if (items.isEmpty()) {
             return null;
@@ -271,17 +271,17 @@ public class Conversation extends TypedData {
         return waitingSince;
     }
 
-    public ConversationPartCollection getConversationPartCollection() {
+    public ConversationPartCollection getConversationPartCollection(Intercom intercom) {
         if (conversationPartCollection == null) {
-            conversationPartCollection = find(this.getId()).getConversationPartCollection();
+            conversationPartCollection = find(intercom, this.getId()).getConversationPartCollection(intercom);
         }
 
         return conversationPartCollection;
     }
 
-    public TagCollection getTagCollection() {
+    public TagCollection getTagCollection(Intercom intercom) {
         if (tagCollection == null) {
-            tagCollection = find(this.getId()).getTagCollection();
+            tagCollection = find(intercom, this.getId()).getTagCollection(intercom);
         }
 
         return tagCollection;

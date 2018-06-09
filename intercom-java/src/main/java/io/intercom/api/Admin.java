@@ -20,14 +20,14 @@ public class Admin extends TypedData implements Replier {
     public static final String TYPE_NOBODY = "nobody_admin";
 
     // don't make public for now
-    static AdminCollection list(Map<String, String> params)
+    static AdminCollection list(Intercom intercom, Map<String, String> params)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(params, "admins", AdminCollection.class);
+        return DataResource.list(intercom, params, "admins", AdminCollection.class);
     }
 
-    public static AdminCollection list()
+    public static AdminCollection list(Intercom intercom)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(SENTINEL, "admins", AdminCollection.class);
+        return DataResource.list(intercom, SENTINEL, "admins", AdminCollection.class);
     }
 
     @SuppressWarnings("FieldCanBeLocal")

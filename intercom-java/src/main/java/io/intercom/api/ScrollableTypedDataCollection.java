@@ -27,7 +27,7 @@ public abstract class ScrollableTypedDataCollection<T extends TypedData> extends
         return type;
     }
 
-    public abstract ScrollableTypedDataCollection<T> scroll();
+    public abstract ScrollableTypedDataCollection<T> scroll(Intercom intercom);
 
     public List<T> getPage() {
         return page;

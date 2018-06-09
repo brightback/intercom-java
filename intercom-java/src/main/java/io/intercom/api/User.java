@@ -30,69 +30,69 @@ public class User extends TypedData implements Replier {
         return CompanyUpdateBuilder.buildUserUpdateCompanies(user.getCompanyCollection(), user.getRemoveCompanyCollection());
     }
 
-    public static User find(String id)
+    public static User find(Intercom intercom, String id)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        final URI users = UriBuilder.newBuilder().path("users").path(id).build();
-        final HttpClient resource = new HttpClient(users);
+        final URI users = UriBuilder.newBuilder(intercom).path("users").path(id).build();
+        final HttpClient resource = new HttpClient(intercom, users);
         return resource.get(User.class);
     }
 
-    public static User find(Map<String, String> params)
+    public static User find(Intercom intercom, Map<String, String> params)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
         if ((!params.containsKey("email")) && (!params.containsKey("user_id"))) {
             throw new InvalidException("a user find must include an email or user_id parameter");
         }
-        return DataResource.find(params, "users", User.class);
+        return DataResource.find(intercom, params, "users", User.class);
     }
 
-    public static User create(User user)
+    public static User create(Intercom intercom, User user)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.create(UserUpdate.buildFrom(user), "users", User.class);
+        return DataResource.create(intercom, UserUpdate.buildFrom(user), "users", User.class);
     }
 
-    public static User update(User user) throws InvalidException, AuthorizationException {
+    public static User update(Intercom intercom, User user) throws InvalidException, AuthorizationException {
         // only send fields the server allows for update
-        return DataResource.update(UserUpdate.buildFrom(user), "users", User.class);
+        return DataResource.update(intercom, UserUpdate.buildFrom(user), "users", User.class);
     }
 
-    public static User delete(String id)
+    public static User delete(Intercom intercom, String id)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.delete(id, "users", User.class);
+        return DataResource.delete(intercom, id, "users", User.class);
     }
 
-    public static User delete(Map<String, String> params)
+    public static User delete(Intercom intercom, Map<String, String> params)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.delete(params, "users", User.class);
+        return DataResource.delete(intercom, params, "users", User.class);
     }
 
-    public static UserCollection list(Map<String, String> params)
+    public static UserCollection list(Intercom intercom, Map<String, String> params)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(params, "users", UserCollection.class);
+        return DataResource.list(intercom, params, "users", UserCollection.class);
     }
 
-    public static UserCollection list()
+    public static UserCollection list(Intercom intercom)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(SENTINEL, "users", UserCollection.class);
+        return DataResource.list(intercom, SENTINEL, "users", UserCollection.class);
     }
 
-    public static ScrollableUserCollection scroll()
+    public static ScrollableUserCollection scroll(Intercom intercom)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.scroll(null, "users", ScrollableUserCollection.class);
+        return DataResource.scroll(intercom, null, "users", ScrollableUserCollection.class);
     }
 
-    public static Job submit(final List<JobItem<User>> items)
+    public static Job submit(Intercom intercom, final List<JobItem<User>> items)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return submit(items, null);
+        return submit(intercom, items, null);
     }
 
-    public static Job submit(final List<JobItem<User>> items, Job job)
+    public static Job submit(Intercom intercom, final List<JobItem<User>> items, Job job)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return Job.submit(UserUpdate.validateAndConvertJobItems(items), job, BULK_PATHS);
+        return Job.submit(intercom, UserUpdate.validateAndConvertJobItems(items), job, BULK_PATHS);
     }
 
-    public static JobItemCollection<User> listJobErrorFeed(String jobID)
+    public static JobItemCollection<User> listJobErrorFeed(Intercom intercom, String jobID)
         throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return Job.listJobErrorFeed(jobID, User.class);
+        return Job.listJobErrorFeed(intercom, jobID, User.class);
     }
 
     @SuppressWarnings("UnusedDeclaration")

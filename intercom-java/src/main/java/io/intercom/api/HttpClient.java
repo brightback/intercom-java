@@ -31,8 +31,6 @@ class HttpClient {
 
     private static final String CLIENT_AGENT_DETAILS = clientAgentDetails();
 
-    private static final String USER_AGENT = Intercom.USER_AGENT;
-
     private static final String UTF_8 = "UTF-8";
 
     private static final String APPLICATION_JSON = "application/json";
@@ -66,13 +64,14 @@ class HttpClient {
 
     private final Map<String, String> headers;
 
-    private final HttpConnectorSupplier connection = Intercom.getHttpConnectorSupplier();
-
-    public HttpClient(URI uri) {
-        this(uri, Maps.<String, String>newHashMap());
+    private final Intercom intercom;
+    
+    public HttpClient(Intercom intercom, URI uri) {
+        this(intercom, uri, Maps.<String, String>newHashMap());
     }
 
-    private HttpClient(URI uri, Map<String, String> headers) {
+    private HttpClient(Intercom intercom, URI uri, Map<String, String> headers) {
+	this.intercom = intercom;
         this.uri = uri;
         this.headers = headers;
         this.objectMapper = MapperSupport.objectMapper();
@@ -139,7 +138,7 @@ class HttpClient {
     }
 
     private HttpURLConnection initializeConnection(URI uri, String method) throws IOException {
-        HttpURLConnection conn = connection.connect(uri);
+        HttpURLConnection conn = intercom.getHttpConnectorSupplier().connect(uri);
         conn.setRequestMethod(method);
         conn = prepareConnection(conn);
         conn = applyHeaders(conn);
@@ -187,7 +186,10 @@ class HttpClient {
             if (logger.isDebugEnabled()) {
                 final String text = CharStreams.toString(new InputStreamReader(entityStream));
                 logger.debug("api server response status[{}] --\n{}\n-- ", responseCode, text);
-                return objectMapper.readValue(text, javaType);
+                T t = objectMapper.readValue(text, javaType);
+		//HACK 
+		if (t instanceof TypedDataCollection) ((TypedDataCollection)t).setIntercom(intercom);
+		return t;
             } else {
                 return objectMapper.readValue(entityStream, javaType);
             }
@@ -229,19 +231,19 @@ class HttpClient {
 
     // todo: expose this config
     private HttpURLConnection prepareConnection(HttpURLConnection conn) {
-        conn.setConnectTimeout(Intercom.getConnectionTimeout());
-        conn.setReadTimeout(Intercom.getRequestTimeout());
-        conn.setUseCaches(Intercom.isRequestUsingCaches());
+        conn.setConnectTimeout(intercom.getConnectionTimeout());
+        conn.setReadTimeout(intercom.getRequestTimeout());
+        conn.setUseCaches(intercom.isRequestUsingCaches());
         return conn;
     }
 
     private Map<String, String> createAuthorizationHeaders() {
-        switch (Intercom.getAuthKeyType()) {
+        switch (intercom.getAuthKeyType()) {
             case API_KEY:
-                headers.put("Authorization", "Basic " + generateAuthString(Intercom.getAppID(),Intercom.getApiKey()));
+                headers.put("Authorization", "Basic " + generateAuthString(intercom.getAppID(), intercom.getApiKey()));
                 break;
             case TOKEN:
-                headers.put("Authorization", "Basic " + generateAuthString(Intercom.getToken(),""));
+                headers.put("Authorization", "Basic " + generateAuthString(intercom.getToken(),""));
                 break;
         }
         return headers;
@@ -252,7 +254,7 @@ class HttpClient {
     }
 
     private Map<String, String> createHeaders() {
-        headers.put("User-Agent", USER_AGENT);
+        headers.put("User-Agent", Intercom.USER_AGENT);
         headers.put("X-Client-Platform-Details", CLIENT_AGENT_DETAILS);
         headers.put("Accept-Charset", UTF_8);
         headers.put("Accept", APPLICATION_JSON);

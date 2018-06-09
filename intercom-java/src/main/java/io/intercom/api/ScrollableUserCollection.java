@@ -7,8 +7,8 @@ import java.util.List;
 public class ScrollableUserCollection extends ScrollableTypedDataCollection<User> {
 
     @Override
-    public ScrollableUserCollection scroll() {
-        return DataResource.scroll(getScrollParam(), "users", ScrollableUserCollection.class);
+    public ScrollableUserCollection scroll(Intercom intercom) {
+        return DataResource.scroll(intercom, getScrollParam(), "users", ScrollableUserCollection.class);
     }
 
     @JsonProperty("users")

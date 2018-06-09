@@ -15,17 +15,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Counts {
 
-    static Counts countQuery(Map<String, String> query) {
-        final URI build = UriBuilder.newBuilder()
+    static Counts countQuery(Intercom intercom, Map<String, String> query) {
+        final URI build = UriBuilder.newBuilder(intercom)
             .path("counts")
             .query(query)
             .build();
-        final HttpClient resource = new HttpClient(build);
+        final HttpClient resource = new HttpClient(intercom, build);
         return resource.get(Counts.class);
     }
 
-    public static Counts.Totals appTotals() throws InvalidException, AuthorizationException {
-        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path("counts").build());
+    public static Counts.Totals appTotals(Intercom intercom) throws InvalidException, AuthorizationException {
+        final HttpClient resource = new HttpClient(intercom, UriBuilder.newBuilder(intercom).path("counts").build());
         return resource.get(Totals.class);
     }
 
@@ -35,31 +35,31 @@ public class Counts {
 //        return countQuery(params).getUser().getUser();
 //    }
 
-    public static List<CountItem> userTags() throws InvalidException, AuthorizationException {
+    public static List<CountItem> userTags(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "user");
         params.put("count", "tag");
-        return countQuery(params).getUser().getTags();
+        return countQuery(intercom, params).getUser().getTags();
     }
 
-    public static List<CountItem> userSegments() throws InvalidException, AuthorizationException {
+    public static List<CountItem> userSegments(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "user");
         params.put("count", "segment");
-        return countQuery(params).getUser().getSegments();
+        return countQuery(intercom, params).getUser().getSegments();
     }
 
-    public static Counts.Conversation conversationTotals() throws InvalidException, AuthorizationException {
+    public static Counts.Conversation conversationTotals(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "conversation");
-        return countQuery(params).getConversation();
+        return countQuery(intercom, params).getConversation();
     }
 
-    public static Counts.Conversation conversationAdmins() throws InvalidException, AuthorizationException {
+    public static Counts.Conversation conversationAdmins(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "conversation");
         params.put("count", "admin");
-        return countQuery(params).getConversation();
+        return countQuery(intercom, params).getConversation();
     }
 
 //    public static Long companyCount() throws InvalidException, AuthorizationException{
@@ -68,25 +68,25 @@ public class Counts {
 //        return countQuery(params).getCompany().getCompanies();
 //    }
 
-    public static List<CountItem> companySegments() throws InvalidException, AuthorizationException {
+    public static List<CountItem> companySegments(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "company");
         params.put("count", "segment");
-        return countQuery(params).getCompany().getSegments();
+        return countQuery(intercom, params).getCompany().getSegments();
     }
 
-    public static List<CountItem> companyTags() throws InvalidException, AuthorizationException {
+    public static List<CountItem> companyTags(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "company");
         params.put("count", "tag");
-        return countQuery(params).getCompany().getTags();
+        return countQuery(intercom, params).getCompany().getTags();
     }
 
-    public static List<CountItem> companyUsers() throws InvalidException, AuthorizationException {
+    public static List<CountItem> companyUsers(Intercom intercom) throws InvalidException, AuthorizationException {
         final HashMap<String, String> params = Maps.newHashMap();
         params.put("type", "company");
         params.put("count", "user");
-        return countQuery(params).getCompany().getUsers();
+        return countQuery(intercom, params).getCompany().getUsers();
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

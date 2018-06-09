@@ -20,66 +20,66 @@ public class Contact extends TypedData implements Replier {
 
     private static final Map<String, String> SENTINEL = Maps.newHashMap();
 
-    public static Contact findByID(String id)
+    public static Contact findByID(Intercom intercom, String id)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return new HttpClient(contactURI(id)).get(Contact.class);
+        return new HttpClient(intercom, contactURI(intercom, id)).get(Contact.class);
     }
 
-    public static Contact findByUserID(String userID)
+    public static Contact findByUserID(Intercom intercom, String userID)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
         final Map<String, String> params = Maps.newHashMap();
         params.put("user_id", userID);
-        return DataResource.find(params, "contacts", Contact.class);
+        return DataResource.find(intercom, params, "contacts", Contact.class);
     }
 
-    public static ContactCollection listByEmail(String email)
+    public static ContactCollection listByEmail(Intercom intercom, String email)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
         final Map<String, String> params = Maps.newHashMap();
         params.put("email", email);
-        return list(params);
+        return list(intercom, params);
     }
 
-    public static ContactCollection list(Map<String, String> params)
+    public static ContactCollection list(Intercom intercom, Map<String, String> params)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(params, "contacts", ContactCollection.class);
+        return DataResource.list(intercom, params, "contacts", ContactCollection.class);
     }
 
-    public static ContactCollection list()
+    public static ContactCollection list(Intercom intercom)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.list(SENTINEL, "contacts", ContactCollection.class);
+        return DataResource.list(intercom, SENTINEL, "contacts", ContactCollection.class);
     }
 
-    public static ScrollableContactCollection scroll()
+    public static ScrollableContactCollection scroll(Intercom intercom)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.scroll(null, "contacts", ScrollableContactCollection.class);
+        return DataResource.scroll(intercom, null, "contacts", ScrollableContactCollection.class);
     }
 
-    public static Contact create(Contact c)
+    public static Contact create(Intercom intercom, Contact c)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.create(ContactUpdate.buildFrom(c), "contacts", Contact.class);
+        return DataResource.create(intercom, ContactUpdate.buildFrom(c), "contacts", Contact.class);
     }
 
-    public static Contact update(Contact c)
+    public static Contact update(Intercom intercom, Contact c)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.update(ContactUpdate.buildFrom(c), "contacts", Contact.class);
+        return DataResource.update(intercom, ContactUpdate.buildFrom(c), "contacts", Contact.class);
     }
 
-    public static Contact delete(Contact c)
+    public static Contact delete(Intercom intercom, Contact c)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.delete(c.getID(), "contacts", Contact.class);
+        return DataResource.delete(intercom, c.getID(), "contacts", Contact.class);
     }
 
-    public static User convert(Contact c, User u)
+    public static User convert(Intercom intercom, Contact c, User u)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
-        return DataResource.post(ContactConvertBuilder.buildConvert(c, u), convertURI(), User.class);
+        return DataResource.post(intercom, ContactConvertBuilder.buildConvert(c, u), convertURI(intercom), User.class);
     }
 
-    private static URI contactURI(String id) {
-        return UriBuilder.newBuilder().path("contacts").path(id).build();
+    private static URI contactURI(Intercom intercom, String id) {
+        return UriBuilder.newBuilder(intercom).path("contacts").path(id).build();
     }
 
-    private static URI convertURI() {
-        return UriBuilder.newBuilder().path("contacts").path("convert").build();
+    private static URI convertURI(Intercom intercom) {
+        return UriBuilder.newBuilder(intercom).path("contacts").path("convert").build();
     }
 
     static class ContactConvertBuilder {

@@ -5,109 +5,98 @@ import java.net.URI;
 public class Intercom {
 
     private static final URI API_BASE_URI = URI.create("https://api.intercom.io/");
-
-    private static volatile URI apiBaseURI = API_BASE_URI;
-
-    private static volatile AuthKeyType authKeyType = AuthKeyType.API_KEY;
+    private static final String VERSION = "2.3.3";
+    public static final String USER_AGENT = "intercom-java/" + Intercom.VERSION;
 
     enum AuthKeyType {
         API_KEY,
         TOKEN
     }
+    
+    private URI apiBaseURI = API_BASE_URI;
+    private AuthKeyType authKeyType = AuthKeyType.API_KEY;
+    private String apiKey;
+    private String token;
+    private String appID;
+    private int connectionTimeout = 3 * 1000;
+    private int requestTimeout = 60 * 1000;
+    private boolean requestUsingCaches = false;
+    private HttpConnectorSupplier httpConnectorSupplier = HttpConnectorSupplier.defaultSupplier;
 
-    private static final String VERSION = "2.3.3";
-
-    public static final String USER_AGENT = "intercom-java/" + Intercom.VERSION;
-
-    private static volatile String apiKey;
-
-    private static volatile String token;
-
-    private static volatile String appID;
-
-    private static volatile int connectionTimeout = 3 * 1000;
-
-    private static volatile int requestTimeout = 60 * 1000;
-
-    private static volatile boolean requestUsingCaches = false;
-
-    private static volatile HttpConnectorSupplier httpConnectorSupplier = HttpConnectorSupplier.defaultSupplier;
-
-    public static long currentTimestamp() {
+    public Intercom() {}
+    
+    public long currentTimestamp() {
         return System.currentTimeMillis()/1000;
     }
 
-    public static int getConnectionTimeout() {
+    public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public static void setConnectionTimeout(int connectionTimeout) {
-        Intercom.connectionTimeout = connectionTimeout;
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 
-    public static int getRequestTimeout() {
+    public int getRequestTimeout() {
         return requestTimeout;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public static void setRequestTimeout(int requestTimeout) {
-        Intercom.requestTimeout = requestTimeout;
+    public void setRequestTimeout(int requestTimeout) {
+        this.requestTimeout = requestTimeout;
     }
 
-    public static boolean isRequestUsingCaches() {
+    public boolean isRequestUsingCaches() {
         return requestUsingCaches;
     }
 
-    public static void setRequestUsingCaches(boolean requestUsingCaches) {
-        Intercom.requestUsingCaches = requestUsingCaches;
+    public void setRequestUsingCaches(boolean requestUsingCaches) {
+        this.requestUsingCaches = requestUsingCaches;
     }
 
-    public static HttpConnectorSupplier getHttpConnectorSupplier() {
+    public HttpConnectorSupplier getHttpConnectorSupplier() {
         return httpConnectorSupplier;
     }
 
-    public static void setHttpConnectorSupplier(HttpConnectorSupplier supplier) {
-        Intercom.httpConnectorSupplier = supplier;
+    public void setHttpConnectorSupplier(HttpConnectorSupplier supplier) {
+        this.httpConnectorSupplier = supplier;
     }
 
-    public static String getAppID() {
+    public String getAppID() {
         return appID;
     }
 
-    public static void setAppID(String appID) {
-        Intercom.appID = appID;
+    public void setAppID(String appID) {
+        this.appID = appID;
     }
 
-    public static void setToken(String token) {
+    public void setToken(String token) {
         authKeyType = AuthKeyType.TOKEN;
-        Intercom.token = token;
+        this.token = token;
     }
 
-    public static String getApiKey() {
-        return Intercom.apiKey;
+    public String getApiKey() {
+        return this.apiKey;
     }
 
-    public static void setApiKey(String apiKey) {
+    public void setApiKey(String apiKey) {
         authKeyType = AuthKeyType.API_KEY;
-        Intercom.apiKey = apiKey;
+        this.apiKey = apiKey;
     }
 
-    public static URI getApiBaseURI() {
-        return Intercom.apiBaseURI;
+    public URI getApiBaseURI() {
+        return this.apiBaseURI;
     }
 
-    public static void setApiBaseURI(URI apiBaseURI) {
-        Intercom.apiBaseURI = apiBaseURI;
+    public void setApiBaseURI(URI apiBaseURI) {
+        this.apiBaseURI = apiBaseURI;
     }
 
-    static AuthKeyType getAuthKeyType() {
+    AuthKeyType getAuthKeyType() {
         return authKeyType;
     }
 
-    public static String getToken() {
+    public String getToken() {
         return token;
     }
-
 
 }
