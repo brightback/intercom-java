@@ -14,7 +14,9 @@ out
 hs_err_pid*
 .idea
 /bin/
-
 intercom-java/.project
-
 .project
+*/target/*
+*~
+*.DS_Store
+dump.rdb
