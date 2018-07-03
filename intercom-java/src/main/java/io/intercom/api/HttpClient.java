@@ -8,6 +8,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -275,4 +277,25 @@ class HttpClient {
         return ThreadLocalRandom.current().nextLong();
     }
 
+    /**
+     * Converts an okhttp Call to a guava ListenableFuture. Enqueues the
+     * Call for execution.
+     * @param call The okhttp Call, not yet queued
+     * @return A ListenableFuture for the Response
+
+    private ListenableFuture<Response> enqueueCall(Call call) {
+	SettableFuture<Response> future = SettableFuture.create();
+	call.enqueue(new Callback() {
+		@Override
+		public void onResponse(Call call, Response response) {
+		    future.set(response);
+		}
+		@Override
+		public void onFailure(Call call, IOException e) {
+		    future.setException(e);
+		}
+	    });
+        return future;
+    }
+     */
 }

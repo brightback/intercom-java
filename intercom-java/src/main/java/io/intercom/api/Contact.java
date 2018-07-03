@@ -32,6 +32,13 @@ public class Contact extends TypedData implements Replier {
         return DataResource.find(intercom, params, "contacts", Contact.class);
     }
 
+    public static Contact findByVisitorID(Intercom intercom, String visitorID)
+            throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
+        final Map<String, String> params = Maps.newHashMap();
+        params.put("user_id", visitorID);
+        return DataResource.find(intercom, params, "visitors", Contact.class);
+    }
+
     public static ContactCollection listByEmail(Intercom intercom, String email)
             throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
         final Map<String, String> params = Maps.newHashMap();
